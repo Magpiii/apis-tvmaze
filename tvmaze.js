@@ -15,16 +15,17 @@ const $searchForm = $("#searchForm");
 async function getShowsByTerm(term) {
   // ADD: Remove placeholder & make request to TVMaze search shows API.
   const res = await axios.get('https://api.tvmaze.com/search/shows', { params: { q: `${term}`} }); 
+  // Source: (https://stackoverflow.com/questions/64319107/convert-array-of-objects-with-promise-to-normal-array, accessed 14 May 2022). 
+  const resArray = await Promise.all(res.data);
 
-  console.log(res);
-
-  for (let show of res.data) {
-    if (show.image.original === null || show.image.original === undefined) {
-      show.image.original = '/Volumes/LaCie/Springboard/How the Web Works and AJAX/AJAX/apis-tvmaze/Screen Shot 2021-02-05 at 8.11.23 AM.png';
-    }
-  }
+  // for (let show of res.data) {
+  //   if (show.image.original === null || show.image.original === undefined) {
+  //     show.image.original = '/Volumes/LaCie/Springboard/How the Web Works and AJAX/AJAX/apis-tvmaze/Screen Shot 2021-02-05 at 8.11.23 AM.png';
+  //   }
+  // }
   
-  return res; 
+  // Return array of shows queried. 
+  return resArray;
 }
 
 
@@ -34,11 +35,19 @@ function populateShows(shows) {
   $showsList.empty();
 
   for (let show of shows) {
+    let showImage = show.show.image.original;
+
+    // Set default image if show object from API call doesn't return an 
+    // image.
+    if (showImage === null || showImage === undefined) {
+      showImage = '/Volumes/LaCie/Springboard/How the Web Works and AJAX/AJAX/apis-tvmaze/Screen Shot 2021-02-05 at 8.11.23 AM.png';
+    }
+
     const $show = $(
         `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img 
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg" 
+              src="${showImage}" 
               alt="Bletchly Circle San Francisco" 
               class="w-25 mr-3">
            <div class="media-body">
@@ -73,7 +82,6 @@ $searchForm.on("submit", async function (evt) {
   await searchForShowAndDisplay();
 });
 
-
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
@@ -83,3 +91,9 @@ $searchForm.on("submit", async function (evt) {
 /** Write a clear docstring for this function... */
 
 // function populateEpisodes(episodes) { }
+
+let shows = getShowsByTerm('the office');
+
+console.log(shows);
+populateShows(shows);
+

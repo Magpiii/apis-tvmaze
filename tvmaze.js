@@ -22,7 +22,7 @@ async function getShowsByTerm(term) {
     return { id: show.id, name: show.name, summary: show.summary, image: show.image ? show.image.original : '/Volumes/LaCie/Springboard/How the Web Works and AJAX/AJAX/apis-tvmaze/Screen Shot 2021-02-05 at 8.11.23 AM.png'};
   });
 
-  console.log(showArr);
+  // console.log(showArr);
   
   // Return array of shows queried. 
   return showArr;
@@ -35,26 +35,28 @@ function populateShows(shows) {
   $showsList.empty();
   // console.log(shows);
 
-  for (let show of shows) {
+  for (let i = 0; i < shows.length; i++) {
     const $show = $(
-        `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
-         <div class="media">
-           <img 
-              src="${show.image}" 
-              alt="${'/Volumes/LaCie/Springboard/How the Web Works and AJAX/AJAX/apis-tvmaze/Screen Shot 2021-02-05 at 8.11.23 AM.png'}" 
-              class="w-25 mr-3">
-           <div class="media-body">
-             <h5 class="text-primary">${show.name}</h5>
-             <div><small>${show.summary}</small></div>
-             <button class="btn btn-outline-light btn-sm Show-getEpisodes">
-               Episodes
-             </button>
-           </div>
-         </div>  
+        `<div data-show-id="${shows[i][id]}" class="Show col-md-12 col-lg-6 mb-4">
+          <div class="media">
+            <img 
+                src="${shows[i].id}" 
+                alt="${'/Volumes/LaCie/Springboard/How the Web Works and AJAX/AJAX/apis-tvmaze/Screen Shot 2021-02-05 at 8.11.23 AM.png'}" 
+                class="w-25 mr-3">
+              <div class="media-body">
+                <h5 class="text-primary">${shows[i].name}</h5>
+                <div><small>${shows[i].summary}</small></div>
+                <button class="btn btn-outline-light btn-sm Show-getEpisodes">
+                  Episodes
+                </button>
+              </div>
+          </div>  
        </div>
       `);
-
-    $showsList.append($show);  }
+    
+    console.log(`Show: ${$show.html}`);
+    $showsList.append($show);  
+  }
 }
 
 

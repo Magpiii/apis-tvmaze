@@ -1,8 +1,8 @@
 "use strict";
 
 const $showsList = $('#shows-list');
-const $episodesArea = $("#episodesArea");
-const $searchForm = $("#searchForm");
+const $episodesArea = $("#episodes-area");
+const $searchForm = $("#search-form");
 
 
 /** Given a search term, search for tv shows that match that query.
@@ -22,7 +22,7 @@ async function getShowsByTerm(term) {
     return { id: show.id, name: show.name, summary: show.summary, image: show.image ? show.image.original : '/Volumes/LaCie/Springboard/How the Web Works and AJAX/AJAX/apis-tvmaze/Screen Shot 2021-02-05 at 8.11.23 AM.png'};
   });
 
-  // console.log(showArr);
+  console.log(showArr);
   
   // Return array of shows queried. 
   return showArr;
@@ -37,16 +37,16 @@ function populateShows(shows) {
 
   for (let i = 0; i < shows.length; i++) {
     const $show = $(
-        `<div data-show-id="${shows[i][id]}" class="Show col-md-12 col-lg-6 mb-4">
-          <div class="media">
+        `<div data-show-id="${shows[i].id}" class="Show col-md-12 col-lg-6 mb-4">
+          <div class="card" data-show-id="${shows[i].id}">
             <img 
-                src="${shows[i].id}" 
+                src="${shows[i].image}" 
                 alt="${'/Volumes/LaCie/Springboard/How the Web Works and AJAX/AJAX/apis-tvmaze/Screen Shot 2021-02-05 at 8.11.23 AM.png'}" 
                 class="w-25 mr-3">
-              <div class="media-body">
+              <div class="card-body">
                 <h5 class="text-primary">${shows[i].name}</h5>
                 <div><small>${shows[i].summary}</small></div>
-                <button class="btn btn-outline-light btn-sm Show-getEpisodes">
+                <button class="btn btn-success btn-sm get-episodes">
                   Episodes
                 </button>
               </div>
@@ -54,11 +54,15 @@ function populateShows(shows) {
        </div>
       `);
     
-    console.log(`Show: ${$show.html}`);
     $showsList.append($show);  
   }
 }
 
+async function run() {
+  let testShows = await getShowsByTerm('the office');
+  
+  populateShows(testShows);
+}
 
 /** Handle search form submission: get shows from API and display.
  *    Hide episodes area (that only gets shown if they ask for episodes)
@@ -87,7 +91,10 @@ $searchForm.on("submit", async function (evt) {
 
 // function populateEpisodes(episodes) { }
 
-let testShows = getShowsByTerm('the office');
+// let testShows = getShowsByTerm('the office');
+// console.log(testShows); 
 
-populateShows(testShows);
+// populateShows(testShows);
+
+run();
 

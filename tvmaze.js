@@ -22,7 +22,7 @@ async function getShowsByTerm(term) {
     return { id: show.id, name: show.name, summary: show.summary, image: show.image ? show.image.original : '/Volumes/LaCie/Springboard/How the Web Works and AJAX/AJAX/apis-tvmaze/Screen Shot 2021-02-05 at 8.11.23 AM.png'};
   });
 
-  console.log(showArr);
+  // console.log(showArr);
   
   // Return array of shows queried. 
   return showArr;
@@ -37,11 +37,11 @@ function populateShows(shows) {
 
   for (let i = 0; i < shows.length; i++) {
     const $show = $(
-        `<div data-show-id="${shows[i].id}" class="Show col-md-12 col-lg-6 mb-4">
+        `<div id="${shows[i].id}" data-show-id="${shows[i].id}" class="Show col-md-12 col-lg-6 mb-4">
           <div class="card" data-show-id="${shows[i].id}">
             <img 
                 src="${shows[i].image}" 
-                alt="${'/Volumes/LaCie/Springboard/How the Web Works and AJAX/AJAX/apis-tvmaze/Screen Shot 2021-02-05 at 8.11.23 AM.png'}" 
+                alt="https://tinyurl.com/tv-missing" 
                 class="w-25 mr-3">
               <div class="card-body">
                 <h5 class="text-primary">${shows[i].name}</h5>
@@ -58,43 +58,77 @@ function populateShows(shows) {
   }
 }
 
-async function run() {
-  let testShows = await getShowsByTerm('the office');
+async function searchAndDisplayShows(query) {
+  let shows = await getShowsByTerm(query);
+  console.log(shows);
   
-  populateShows(testShows);
+  populateShows(shows);
 }
 
 /** Handle search form submission: get shows from API and display.
  *    Hide episodes area (that only gets shown if they ask for episodes)
  */
 
-async function searchForShowAndDisplay() {
-  const term = $("#searchForm-term").val();
-  const shows = await getShowsByTerm(term);
+// async function searchForShowAndDisplay() {
+//   const term = $("#searchForm-term").val();
+//   const shows = await getShowsByTerm(term);
 
-  $episodesArea.hide();
-  populateShows(shows);
-}
+//   $episodesArea.hide();
+//   populateShows(shows);
+// }
 
 $searchForm.on("submit", async function (evt) {
   evt.preventDefault();
-  await searchForShowAndDisplay();
+  // await searchForShowAndDisplay();
 });
 
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
+async function getEpisodesOfShow(id) { 
+  const episodes = axios.get(`https://api.tvmaze.com/shows/${id}/episodes`);
+  console.log(episodes);
+
+  const episodeArr = res.data.map(el => {
+    let episode = el.show;
+
+    return { id: episode.id, name: episode.name, season: episode.season, number: episode.number};
+  });
+
+  return episodeArr;
+}
 
 /** Write a clear docstring for this function... */
 
-// function populateEpisodes(episodes) { }
+function populateEpisodes(episodes) { 
+  for (let i = 0; i < episodes.length; i++) {
+    const $episode = $(
+      `<li class="episode-list">
+        <ul class="episode">
+        
+        </ul>
+      </li>`
+    );
+  } 
+}
 
-// let testShows = getShowsByTerm('the office');
-// console.log(testShows); 
+async function searchAndDisplayEpisodes() {
+  let episodes = getEpisodesOfShow($()); 
+}
 
-// populateShows(testShows);
+$('#search-button').click(function() {
+  console.log($('#search-query').val()); 
 
-run();
+  searchAndDisplayShows($('#search-query').val());
+}); 
+
+// Source: (https://api.jquery.com/on/, accessed 17 May 2022). 
+// Source: (https://api.jquery.com/closest/, accessed 17 May 2022). 
+$("#shows-list").on("click", ".get-episodes", async function handleEpisodeClick(evt) {
+  // Source: (https://api.jquery.com/data/, accessed 17 May 2022). 
+  let showId = $(evt.target).closest(".Show").data("show-id");
+  let episodes = await getEpisodesOfShow(showId);
+  populateEpisodes(episodes);
+});
 

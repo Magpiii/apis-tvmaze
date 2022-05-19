@@ -1,7 +1,7 @@
 "use strict";
 
 const $showsList = $('#shows-list');
-const $episodesArea = $("#episodes-area");
+const $episodesList = $("#episodes-list");
 const $searchForm = $("#search-form");
 
 
@@ -50,6 +50,7 @@ function populateShows(shows) {
                   Episodes
                 </button>
               </div>
+              <ul id="${shows[i].id}-episodes"></ul>
           </div>  
        </div>
       `);
@@ -87,30 +88,31 @@ $searchForm.on("submit", async function (evt) {
  */
 
 async function getEpisodesOfShow(id) { 
-  const episodes = axios.get(`https://api.tvmaze.com/shows/${id}/episodes`);
+  const episodes = await axios.get(`https://api.tvmaze.com/shows/${id}/episodes`);
   console.log(episodes);
 
-  const episodeArr = res.data.map(el => {
-    let episode = el.show;
-
-    return { id: episode.id, name: episode.name, season: episode.season, number: episode.number};
+  const episodeArr = episodes.data.map(el => {
+    return { id: el.id, name: el.name, season: el.season, number: el.number};
   });
+  console.log(episodeArr);
 
   return episodeArr;
 }
 
 /** Write a clear docstring for this function... */
 
-function populateEpisodes(episodes) { 
+function populateEpisodes(episodes, showId) { 
   for (let i = 0; i < episodes.length; i++) {
     const $episode = $(
-      `<li class="episode-list">
-        <ul class="episode">
-        
-        </ul>
+      `<li class="episode">
+        <h5>${episodes[i].name}</h5>
+        <div><small>${episodes[i].season}</small></div>
+        <div><small>${episodes[i].number}</small></div>
       </li>`
     );
-  } 
+
+    $(`#${showId}-episodes`).append($episode);
+  }  
 }
 
 async function searchAndDisplayEpisodes() {
@@ -129,6 +131,6 @@ $("#shows-list").on("click", ".get-episodes", async function handleEpisodeClick(
   // Source: (https://api.jquery.com/data/, accessed 17 May 2022). 
   let showId = $(evt.target).closest(".Show").data("show-id");
   let episodes = await getEpisodesOfShow(showId);
-  populateEpisodes(episodes);
+  populateEpisodes(episodes, showId);
 });
 
